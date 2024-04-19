@@ -5,11 +5,11 @@ import { useAppStore } from '@/store'
 import Map from '@/components/Map.vue'
 import Home from '@/components/Home.vue'
 
-const { t, locale } = useI18n()
+const { t, locale, availableLocales } = useI18n()
 const appStore = useAppStore()
 const { getResultJson } = appStore
 
-const lang = ref(localStorage.getItem('lang') ? localStorage.getItem('lang') : (navigator?.language == 'ru' || navigator?.language == 'ru-RU') ? 'ru' : 'en')
+const lang = ref('en')
 const currentTab = ref(localStorage.getItem('tab') || 'home')
 const loading = ref(true)
 
@@ -17,13 +17,24 @@ watch(currentTab, () => {
   localStorage.setItem('tab', currentTab.value)
 })
 
+const initLang = function () {
+  let __lang = localStorage.getItem('lang')
+  if (navigator && navigator.language) {
+    let find = availableLocales.find(e => e == navigator.language)
+    if (!find && navigator.language.includes('-')) find = availableLocales.find(e => e == navigator.language.split('-')[0])
+    __lang = find || 'en'
+  }
+  lang.value = __lang
+  changeLang()
+}
+
 const toggleLang = function () {
   if (lang.value == 'en') {
     lang.value = 'ru'
-    localStorage.setItem('lang', 'ru')
+    localStorage.setItem('lang', lang.value)
   } else {
     lang.value = 'en'
-    localStorage.setItem('lang', 'en')
+    localStorage.setItem('lang', lang.value)
   }
   changeLang()
 }
@@ -35,8 +46,8 @@ const changeLang = function () {
 }
 
 onMounted(async () => {
+  initLang()
   await getResultJson()
-  changeLang()
   loading.value = false
 })
 </script>
@@ -73,12 +84,8 @@ onMounted(async () => {
     </div>
   </main>
   <main class="container mx-auto p-2" v-else>
-    <section class="relative overflow-x-auto block" v-show="currentTab == 'home'">
-      <Home />
-    </section>
-    <section v-show="currentTab == 'map'">
-      <Map />
-    </section>
+    <Home v-show="currentTab == 'home'" />
+    <Map v-show="currentTab == 'map'" />
   </main>
   <footer class="container mx-auto px-2 mb-2 text-white/70">
     <div class="w-full my-1 p-1 flex justify-between border-t border-black/10 dark:border-white/10">

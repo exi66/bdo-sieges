@@ -8,8 +8,8 @@
   <link rel="canonical" href="https://sandbox.exi.moe/bdo-sieges/">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="./assets/main.css?v13">
-  <script defer type="module" src="./assets/main.js?v13"></script>
+  <link rel="stylesheet" href="./assets/main.css?v14">
+  <script defer type="module" src="./assets/main.js?v14"></script>
   <title>Black Desert RU - осады</title>
 </head>
 

@@ -1,13 +1,11 @@
 <script setup>
 import L from 'leaflet'
 import { ref, onMounted, watch, computed } from 'vue'
-import { fortressIcon, crownIcon } from '@/map/markers'
+import { fortressIcon, crownIcon, flagIcon } from '@/map/markers'
 import { storeToRefs } from 'pinia'
 import { useAppStore } from '@/store'
 import ContextMenu from 'primevue/contextmenu'
-import OverlayPanel from 'primevue/overlaypanel';
-import { flagIcon } from '../map/markers'
-
+import OverlayPanel from 'primevue/overlaypanel'
 
 //fix https://salesforce.stackexchange.com/questions/180977/leaflet-error-when-zoom-after-close-popup-in-lightning-component
 L.Popup.prototype._animateZoom = function (e) {
@@ -94,6 +92,8 @@ const selectedFortressDraggable = computed(() => {
   if (!selectedFortress.value || !selectedFortressFlag.value) return false
   return selectedFortress.value.dragging.enabled()
 })
+
+const parseError = ref(false)
 
 const icons = [
   'icon-empty', 'icon-crown',
@@ -360,7 +360,6 @@ const copyExport = function () {
   navigator.clipboard.writeText(getMarkersBase64.value)
 }
 
-const parseError = ref(false)
 //I know it looks ugly
 const pasteExport = function () {
   parseError.value = false
@@ -418,7 +417,7 @@ const pasteExport = function () {
 </script>
 
 <template>
-  <div class="flex flex-row gap-2">
+  <section class="flex flex-row gap-2">
     <ContextMenu @contextmenu.prevent ref="menu" v-bind:model="items"
       class="bg-black/80 backdrop-blur rounded text-white/80 shadow w-80 context-menu"
       @hide="selectedFortressFlag = false">
@@ -571,10 +570,10 @@ const pasteExport = function () {
             <i class="bi bi-question"></i>
           </button>
         </div>
-        <div id="map" style="height: 80vh;" class="rounded" @contextmenu="onRightClick($event)"></div>
+        <div id="map" class="rounded h-[80vh]" @contextmenu="onRightClick($event)"></div>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <style scoped>
