@@ -19,7 +19,7 @@ watch(currentTab, () => {
 
 const initLang = function () {
   let __lang = localStorage.getItem('lang')
-  if (navigator && navigator.language) {
+  if (!__lang && navigator && navigator.language) {
     let find = availableLocales.find(e => e == navigator.language)
     if (!find && navigator.language.includes('-')) find = availableLocales.find(e => e == navigator.language.split('-')[0])
     __lang = find || 'en'
