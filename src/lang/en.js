@@ -27,7 +27,9 @@ export default {
     shareExport: 'Export',
     shareExportPlacegolder: 'Copy string',
     shareCopy: 'Copy',
-    shareBad: 'Bad string'
+    shareBad: 'Bad string',
+    clearButton: 'Clear map',
+    confirmClearMap: 'Are you sure you want to clear the card?'
   },
   header: {
     home: 'Home',
@@ -42,5 +44,6 @@ export default {
   },
   loading: 'Loading...',
   title: 'Black Desert RU - sieges',
+  emoji: '🇬🇧',
   lang: 'EN'
 }

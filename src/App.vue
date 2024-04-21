@@ -4,8 +4,9 @@ import { ref, onMounted, watch } from 'vue'
 import { useAppStore } from '@/store'
 import Map from '@/components/Map.vue'
 import Home from '@/components/Home.vue'
+import { Select } from '@/ui/select'
 
-const { t, locale, availableLocales } = useI18n()
+const { t, locale, availableLocales, messages } = useI18n()
 const appStore = useAppStore()
 const { getResultJson } = appStore
 
@@ -17,6 +18,13 @@ watch(currentTab, () => {
   localStorage.setItem('tab', currentTab.value)
 })
 
+watch(lang, () => {
+  if (availableLocales.find(e => e === lang.value)) {
+    localStorage.setItem('lang', lang.value)
+    changeLang()
+  }
+})
+
 const initLang = function () {
   let __lang = localStorage.getItem('lang')
   if (!__lang && navigator && navigator.language) {
@@ -25,17 +33,6 @@ const initLang = function () {
     __lang = find || 'en'
   }
   lang.value = __lang
-  changeLang()
-}
-
-const toggleLang = function () {
-  if (lang.value == 'en') {
-    lang.value = 'ru'
-    localStorage.setItem('lang', lang.value)
-  } else {
-    lang.value = 'en'
-    localStorage.setItem('lang', lang.value)
-  }
   changeLang()
 }
 
@@ -63,10 +60,11 @@ onMounted(async () => {
         :aria-checked="currentTab === 'map'" @click="currentTab = 'map'">
         {{ $t("header.map") }} (dev)
       </button>
-      <button type="button" @click="toggleLang()"
-        class="p-2 ml-auto uppercase select-none transition-all leading-none rounded bg-transparent border border-transparent hover:bg-black/10 dark:hover:bg-white/10">
-        {{ $t('lang') }}
-      </button>
+      <Select class="ml-auto appearance-none" v-model="lang">
+        <option :value="__lang" v-for="__lang in availableLocales" :key="__lang">
+          {{ messages[__lang]['emoji'] }} {{ messages[__lang]['lang'] }}
+        </option>
+      </Select>
     </div>
   </header>
   <main class="container mx-auto p-2" v-if="loading">
@@ -84,8 +82,8 @@ onMounted(async () => {
     </div>
   </main>
   <main class="container mx-auto p-2" v-else>
-    <Home v-show="currentTab == 'home'" />
-    <Map v-show="currentTab == 'map'" />
+    <Home v-if="currentTab == 'home'" />
+    <Map v-if="currentTab == 'map'" />
   </main>
   <footer class="container mx-auto px-2 mb-2 text-white/70">
     <div class="w-full my-1 p-1 flex justify-between border-t border-black/10 dark:border-white/10">

@@ -14,9 +14,10 @@ html.dark {
 *:focus,
 *:focus-visible,
 *:hover {
-  outline: none;
+  outline-width: 0;
 }
 
+select:focus-visible,
 input:focus-visible,
 button:focus-visible,
 a:focus-visible {
@@ -24,7 +25,7 @@ a:focus-visible {
 }
 
 body {
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Twemoji Country Flags', 'Open Sans', sans-serif;
   font-size: 16px;
   font-style: normal;
   font-weight: 400;

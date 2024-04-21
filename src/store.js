@@ -49,3 +49,7 @@ export const useAppStore = defineStore('app', () => {
     getValenciaOwner
   }
 })
+
+export const useMapStore = defineStore('map', () => {
+  const data = ref({})
+})

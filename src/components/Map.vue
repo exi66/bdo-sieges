@@ -1,4 +1,5 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
 import L from 'leaflet'
 import { ref, onMounted, watch, computed } from 'vue'
 import { fortressIcon, crownIcon, flagIcon } from '@/map/markers'
@@ -6,6 +7,8 @@ import { storeToRefs } from 'pinia'
 import { useAppStore } from '@/store'
 import ContextMenu from 'primevue/contextmenu'
 import OverlayPanel from 'primevue/overlaypanel'
+import { Button } from '@/ui/button'
+import { Input } from '@/ui/input'
 
 //fix https://salesforce.stackexchange.com/questions/180977/leaflet-error-when-zoom-after-close-popup-in-lightning-component
 L.Popup.prototype._animateZoom = function (e) {
@@ -17,12 +20,14 @@ L.Popup.prototype._animateZoom = function (e) {
   L.DomUtil.setPosition(this._container, pos.add(anchor))
 }
 
+const { t } = useI18n()
+
 const helpOverlay = ref()
 const shareOverlay = ref()
 const copyExportButton = ref()
 const exportString = ref(null)
 const menu = ref()
-const items = ref([
+const items = [
   {
     label: 'map.drawOwners',
     icon: 'bi bi-eye-fill',
@@ -68,7 +73,7 @@ const items = ref([
   {
     isInterface: true
   }
-])
+]
 
 const appStore = useAppStore()
 const { getCalpheonOwner, getMediahOwner, getValenciaOwner } = storeToRefs(appStore)
@@ -113,6 +118,7 @@ watch(selectedFortressFlag, () => {
 onMounted(() => {
   createMap()
   createCastleOwners()
+  initMarkersFromStorage()
 })
 
 const createMap = function () {
@@ -185,10 +191,10 @@ const createMarker = function (baseIconIndex, colorIndex = null, iconName = null
   switch (baseIconIndex) {
     case 0:
       svgIcon = fortressIcon([`color-${colorIndex || colorFortress.value}`, iconName || iconFortress.value])
-      break;
+      break
     case 1:
       svgIcon = flagIcon([`color-${colorIndex || colorFortress.value}`, iconName || iconFortress.value])
-      break;
+      break
     default:
       svgIcon = fortressIcon([`color-${colorIndex || colorFortress.value}`, iconName || iconFortress.value])
   }
@@ -247,6 +253,31 @@ const clearMarkers = function () {
 const getMarkers = computed(() => {
   return [...dataMarkers.value.values()]
 })
+
+watch(getMarkers, () => {
+  localStorage.setItem('markers', JSON.stringify(getMarkers.value))
+}, { deep: true })
+
+const initMarkersFromStorage = function () {
+  const markersString = localStorage.getItem('markers')
+  let errorFlag = false
+  if (markersString) {
+    try {
+      const markers = JSON.parse(markersString)
+      if (validateImportArray(markers)) {
+        for (const c of markers) {
+          createMarker(c.t, c.c, c.i, c.p, c.d, c.l)
+        }
+      } else errorFlag = true
+    } catch (e) {
+      errorFlag = true
+    }
+  }
+  if (errorFlag) {
+    console.warn('Can\'t load markers from storage! Storage cleared.')
+    localStorage.removeItem('markers')
+  }
+}
 
 const getMarkersBase64 = computed(() => {
   if (getMarkers.value.length < 1) return ''
@@ -317,6 +348,10 @@ const deleteSelected = function () {
   selectedFortress.value = null
 }
 
+const clearMap = function () {
+  if (confirm(t('map.confirmClearMap')) === true) clearMarkers()
+}
+
 const toBalenos = function () {
   map.value.setView([-9.6, 10.5], 6);
 }
@@ -351,62 +386,26 @@ const closeHelp = function () {
 
 const copyExport = function () {
   if (copyExportButton.value) {
-    copyExportButton.value.ariaChecked = "true"
+    copyExportButton.value.ariaChecked = 'true'
     setTimeout(function () {
       if (copyExportButton.value)
-        copyExportButton.value.ariaChecked = "false"
+        copyExportButton.value.ariaChecked = 'false'
     }, 3000);
   }
   navigator.clipboard.writeText(getMarkersBase64.value)
 }
 
-//I know it looks ugly
 const pasteExport = function () {
   parseError.value = false
   if (!exportString.value) return
   try {
-    const json = JSON.parse(atob(exportString.value))
-    if (!(json instanceof Array)) {
+    const markers = JSON.parse(atob(exportString.value))
+    if (!validateImportArray(markers)) {
       parseError.value = true
       return
     }
-    for (let c of json) {
-      if (
-        !Object.hasOwn(c, 't') ||
-        !Object.hasOwn(c, 'c') ||
-        !Object.hasOwn(c, 'i') ||
-        !Object.hasOwn(c, 'p') ||
-        !Object.hasOwn(c, 'd') ||
-        !Object.hasOwn(c, 'l')
-      ) {
-        parseError.value = true
-        return
-      }
-      if (
-        (typeof c.t !== 'number') ||
-        (typeof c.c !== 'number') ||
-        (c.t !== 0 && c.t !== 1) ||
-        (c.c <= 0 || c.c > 40) ||
-        (typeof c.i !== 'string') ||
-        (typeof c.p !== 'string' && c.p !== null) ||
-        (typeof c.d !== 'boolean') ||
-        (typeof c.l !== 'object') ||
-        (!Object.hasOwn(c.l, 'lat')) ||
-        (!Object.hasOwn(c.l, 'lng'))
-      ) {
-        parseError.value = true
-        return
-      }
-      if (
-        (typeof c.l.lat !== 'number') || (typeof c.l.lng !== 'number')
-      ) {
-        parseError.value = true
-        return
-      }
-      c.c = parseInt(c.c)
-    }
     clearMarkers()
-    for (const c of json) {
+    for (const c of markers) {
       createMarker(c.t, c.c, c.i, c.p, c.d, c.l)
     }
   } catch (e) {
@@ -414,12 +413,40 @@ const pasteExport = function () {
     return
   }
 }
+
+const validateImportArray = function (array) {
+  if (!(array instanceof Array)) return false
+  return array.every(item => {
+    return (typeof item === 'object') &&
+      //fields
+      Object.hasOwn(item, 't') &&
+      Object.hasOwn(item, 'c') &&
+      Object.hasOwn(item, 'i') &&
+      Object.hasOwn(item, 'p') &&
+      Object.hasOwn(item, 'd') &&
+      Object.hasOwn(item, 'l') &&
+      //type of fields
+      (typeof item.t === 'number' && Number.isInteger(item.c)) &&
+      (typeof item.c === 'number' && Number.isInteger(item.c)) &&
+      (typeof item.i === 'string') &&
+      (typeof item.p === 'string' || item.p === null) && //tooltip string or nul
+      (typeof item.d === 'boolean') &&
+      (typeof item.l === 'object') &&
+      //valid values of fields
+      (item.t === 0 || item.t === 1) && //baseicon
+      (item.c > 0 && item.c <= 40) && //color
+      Object.hasOwn(item.l, 'lat') && //cords
+      Object.hasOwn(item.l, 'lng') &&
+      (typeof item.l.lat === 'number') &&
+      (typeof item.l.lng === 'number')
+  })
+}
 </script>
 
 <template>
   <section class="flex flex-row gap-2">
     <ContextMenu @contextmenu.prevent ref="menu" v-bind:model="items"
-      class="bg-black/80 backdrop-blur rounded text-white/80 shadow w-80 context-menu"
+      class="bg-shark-900/90 backdrop-blur rounded text-white/80 shadow w-80 context-menu"
       @hide="selectedFortressFlag = false">
       <template #item="{ item, props }">
         <a v-if="!item.isInterface"
@@ -436,7 +463,7 @@ const pasteExport = function () {
             <button @click.stop="colorFortress = n" type="button" class="p-0.5 hover:opacity-70 transition-all"
               v-for="n in 40" :key="`colorsButtonC${n}`" :class="`color-${n}`">
               <div
-                class="h-7 bg-[--color] box-border aria-checked:outline-2 aria-checked:outline-none aria-checked:outline-offset-0 aria-checked:outline-black dark:aria-checked:outline-white rounded"
+                class="bg-[--color] aspect-square aria-checked:outline-none aria-checked:outline-offset-0 aria-checked:outline-black dark:aria-checked:outline-white rounded"
                 :aria-checked="colorFortress == n">
               </div>
             </button>
@@ -445,31 +472,28 @@ const pasteExport = function () {
             <button @click.stop="iconFortress = item" type="button" class="p-0.5 hover:opacity-70 transition-all"
               v-for="item in icons" :key="`iconsButtonC${item}`" :class="item">
               <div
-                class="h-7 box-border aria-checked:outline-2 aria-checked:outline-none aria-checked:outline-offset-0 aria-checked:outline-black dark:aria-checked:outline-white rounded icon bg-no-repeat bg-auto bg-center"
+                class="icon bg-no-repeat bg-auto bg-center aspect-square aria-checked:outline-none aria-checked:outline-offset-0 aria-checked:outline-black dark:aria-checked:outline-white rounded"
                 :aria-checked="iconFortress == item">
               </div>
             </button>
           </div>
-          <input v-model="nameFortress" name="tooltip" type="text" @click.stop @keyup.prevent
-            class="flex-1 rounded bg-black/10 dark:bg-white/10 px-2 py-1 text-sm leading-6"
-            :placeholder="$t('map.tooltipInputPlaceholder')" />
+          <Input v-model="nameFortress" name="tooltip" type="text" @click.stop @keyup.prevent
+            class="flex-1 text-sm leading-6" :placeholder="$t('map.tooltipInputPlaceholder')" />
           <div class="w-full flex gap-1">
-            <button @click="createMarker(0)" type="button" :title="$t('map.add')"
-              class="bg-black/10 dark:bg-white/10 rounded px-2 py-1 hover:opacity-70 transition-all flex-1 flex justify-center">
+            <Button class="flex-1" @click="createMarker(0)">
               <i class="bi bi-plus-lg"></i><span class="text-sm ms-1 my-auto">{{ $t('map.fortress') }}</span>
-            </button>
-            <button @click="createMarker(1)" type="button" :title="$t('map.add')"
-              class="bg-black/10 dark:bg-white/10 rounded px-2 py-1 hover:opacity-70 transition-all flex-1 flex justify-center">
+            </Button>
+            <Button class="flex-1" @click="createMarker(1)">
               <i class="bi bi-plus-lg"></i><span class="text-sm ms-1 my-auto">{{ $t('map.flag') }}</span>
-            </button>
+            </Button>
           </div>
         </div>
         <div v-else @click.stop class="flex flex-wrap p-2 gap-1">
-          <div class="w-full grid grid-cols-10">
+          <div class="w-full grid grid-cols-10 auto-rows-fr">
             <button @click="changeColorSelected(n)" type="button" class="p-0.5 hover:opacity-70 transition-all"
               v-for="n in 40" :key="`colorsButtonE${n}`" :class="`color-${n}`">
               <div
-                class="h-7 bg-[--color] box-border aria-checked:outline-2 aria-checked:outline-none aria-checked:outline-offset-0 aria-checked:outline-black dark:aria-checked:outline-white rounded"
+                class="bg-[--color] aspect-square aria-checked:outline-none aria-checked:outline-offset-0 aria-checked:outline-black dark:aria-checked:outline-white rounded"
                 :aria-checked="selectedColorFortress == n">
               </div>
             </button>
@@ -478,29 +502,24 @@ const pasteExport = function () {
             <button @click="changeIconSelected(item)" type="button" class="p-0.5 hover:opacity-70 transition-all"
               v-for="item in icons" :key="`iconsButtonE${item}`" :class="item">
               <div
-                class="h-7 box-border aria-checked:outline-2 aria-checked:outline-none aria-checked:outline-offset-0 aria-checked:outline-black dark:aria-checked:outline-white rounded icon bg-no-repeat bg-auto bg-center"
+                class="icon bg-no-repeat bg-auto bg-center aspect-square aria-checked:outline-none aria-checked:outline-offset-0 aria-checked:outline-black dark:aria-checked:outline-white rounded"
                 :aria-checked="selectedIconFortress == item">
               </div>
             </button>
           </div>
           <div class="w-full flex gap-1">
-            <input v-model="selectedNameFortress" name="tooltip" type="text" @change="changeTooltipSelected()"
-              class="flex-1 rounded bg-black/10 dark:bg-white/10 px-2 py-1 text-sm leading-6"
-              :placeholder="$t('map.tooltipInputPlaceholder')" />
+            <Input v-model="selectedNameFortress" name="tooltip" type="text" @change="changeTooltipSelected()"
+              class="flex-1 text-sm leading-6" :placeholder="$t('map.tooltipInputPlaceholder')" />
           </div>
           <div class="w-full flex gap-1">
-            <button @click="lockSelected()" type="button"
-              class="bg-black/10 dark:bg-white/10 rounded px-2 py-1 flex-1 group hover:opacity-70 transition-all"
-              :aria-checked="selectedFortressDraggable"
+            <Button @click="lockSelected()" class="flex-1 group" :aria-checked="selectedFortressDraggable"
               :title="selectedFortressDraggable ? $t('map.lock') : $t('map.unlock')">
               <i class="bi bi-lock group-aria-checked:hidden"></i>
               <i class="bi bi-unlock hidden group-aria-checked:inline"></i>
-            </button>
-            <button @click="deleteSelected()" type="button"
-              class="bg-black/10 dark:bg-white/10 rounded px-2 py-1 flex-1 hover:opacity-70 transition-all"
-              :title="$t('map.delete')">
+            </Button>
+            <Button @click="deleteSelected()" class="flex-1" :title="$t('map.delete')">
               <i class="bi bi-trash"></i>
-            </button>
+            </Button>
           </div>
         </div>
       </template>
@@ -517,15 +536,14 @@ const pasteExport = function () {
                   </label>
                 </div>
                 <div class="relative">
-                  <button type="button" ref="copyExportButton"
-                    class="bg-black/10 dark:bg-white/10 aria-checked:bg-accent dark:aria-checked:bg-accent text-white rounded px-1 leading-6 text-sm hover:opacity-80 disabled:hover:opacity-50 disabled:opacity-50 transition-all ml-auto absolute top-1 right-1 group"
+                  <button ref="copyExportButton" type="button"
+                    class="text-black dark:text-white aria-checked:bg-accent dark:aria-checked:bg-accent rounded px-1 leading-6 text-sm hover:opacity-80 transition-all absolute top-1/2 right-1.5 group -translate-y-1/2"
                     @click="copyExport()" :disabled="getMarkersBase64.length < 1" :title="$t('map.shareCopy')">
                     <i class="bi bi-copy group-aria-checked:hidden"></i>
                     <i class="bi bi-check2 hidden group-aria-checked:inline"></i>
                   </button>
-                  <input id="export" type="text" :placeholder="$t('map.shareExportPlacegolder')"
-                    class="flex-1 rounded bg-black/10 dark:bg-white/10 px-2 pr-8 py-1 text-sm leading-6 w-full resize-none"
-                    v-model="getMarkersBase64" readonly />
+                  <Input id="export" type="text" :placeholder="$t('map.shareExportPlacegolder')"
+                    class="w-full pr-8 text-sm leading-6 truncate" v-model="getMarkersBase64" readonly />
                 </div>
               </div>
               <div>
@@ -535,9 +553,9 @@ const pasteExport = function () {
                     {{ $t('map.shareBad') }}
                   </span>
                 </label>
-                <input id="import" :placeholder="$t('map.shareImportPlacegolder')" type="text" @input="pasteExport()"
+                <Input id="import" :placeholder="$t('map.shareImportPlacegolder')" type="text" @input="pasteExport()"
                   v-model="exportString"
-                  class="flex-1 rounded box-border bg-black/10 dark:bg-white/10 px-2 py-1 text-sm leading-6 w-full resize-none data-[valid='false']:border-red-500 border-transparent border"
+                  class="w-full text-sm leading-6 truncate data-[valid='false']:border-red-500 dark:data-[valid='false']:border-red-500 border-transparent border"
                   :data-valid="!parseError" />
               </div>
             </div>
@@ -551,24 +569,21 @@ const pasteExport = function () {
             <p class="text-white/80 text-sm">
               {{ $t('map.howToUseText') }}
             </p>
-            <button type="button"
-              class="bg-accent text-white rounded px-2 py-1 leading-6 text-sm hover:opacity-80 transition-all mt-2 w-full"
-              @click="closeHelp()">
+            <Button variant="primary" class="w-full mt-1" @click="closeHelp()">
               {{ $t('map.helpCloseButton') }}
-            </button>
+            </Button>
           </div>
         </OverlayPanel>
         <div class="absolute right-0 z-[1000] pr-2.5 pt-2.5 flex gap-2.5">
-          <button type="button" :title="$t('map.shareButton')"
-            class="bg-accent text-white shadow rounded px-2 py-1 leading-6 hover:opacity-80 transition-all"
-            @click="toggleShare($event)">
+          <Button variant="primary" :title="$t('map.clearButton')" class="shadow" @click="clearMap()">
+            <i class="bi bi-trash"></i>
+          </Button>
+          <Button variant="primary" :title="$t('map.shareButton')" class="shadow" @click="toggleShare($event)">
             <i class="bi bi-share"></i>
-          </button>
-          <button type="button" :title="$t('map.helpButton')"
-            class="bg-accent text-white shadow rounded px-2 py-1 leading-6 hover:opacity-80 transition-all"
-            @click="toggleHelp($event)">
+          </Button>
+          <Button variant="primary" :title="$t('map.helpButton')" class="shadow" @click="toggleHelp($event)">
             <i class="bi bi-question"></i>
-          </button>
+          </Button>
         </div>
         <div id="map" class="rounded h-[80vh]" @contextmenu="onRightClick($event)"></div>
       </div>

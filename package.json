@@ -11,10 +11,15 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@vueuse/core": "^10.9.0",
     "axios": "^1.6.8",
     "bootstrap-icons": "^1.11.3",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.0",
+    "country-flag-emoji-polyfill": "^0.1.8",
     "pinia": "^2.1.7",
     "primevue": "^3.51.0",
+    "tailwind-merge": "^2.3.0",
     "vue": "^3.4.23",
     "vue-i18n": "^9.13.0"
   },

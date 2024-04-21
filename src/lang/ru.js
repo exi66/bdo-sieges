@@ -28,7 +28,9 @@ export default {
     shareExport: 'Экспортировать',
     shareExportPlacegolder: 'Скопируйте строку',
     shareCopy: 'Скопировать',
-    shareBad: 'Ошибка'
+    shareBad: 'Ошибка',
+    clearButton: 'Очистить карту',
+    confirmClearMap: 'Вы действительно хотите очистить карту?'
   },
   header: {
     home: 'Главная',
@@ -43,5 +45,6 @@ export default {
   },
   loading: 'Загрузка...',
   title: 'Black Desert RU - осады',
+  emoji: '🇷🇺',
   lang: 'РУ'
 }
