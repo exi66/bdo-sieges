@@ -60,7 +60,7 @@ onMounted(async () => {
         :aria-checked="currentTab === 'map'" @click="currentTab = 'map'">
         {{ $t("header.map") }} (dev)
       </button>
-      <Select class="ml-auto appearance-none" v-model="lang">
+      <Select class="ml-auto appearance-none" v-model="lang" name="language">
         <option :value="__lang" v-for="__lang in availableLocales" :key="__lang">
           {{ messages[__lang]['emoji'] }} {{ messages[__lang]['lang'] }}
         </option>
