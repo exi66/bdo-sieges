@@ -108,18 +108,25 @@ const icons = [
   'icon-fourth', 'icon-fifth'
 ]
 
-watch(selectedFortressFlag, () => {
-  if (selectedFortressFlag.value && selectedFortress.value && selectedFortress.value._icon)
-    L.DomUtil.addClass(selectedFortress.value._icon, 'selected-marker')
-  if (!selectedFortressFlag.value && selectedFortress.value && selectedFortress.value._icon)
-    L.DomUtil.removeClass(selectedFortress.value._icon, 'selected-marker')
-})
+// watch(selectedFortressFlag, () => {
+//   if (selectedFortressFlag.value && selectedFortress.value && selectedFortress.value._icon)
+//     L.DomUtil.addClass(selectedFortress.value._icon, 'selected-marker')
+//   if (!selectedFortressFlag.value && selectedFortress.value && selectedFortress.value._icon)
+//     L.DomUtil.removeClass(selectedFortress.value._icon, 'selected-marker')
+// })
 
 onMounted(() => {
   createMap()
   createCastleOwners()
   initMarkersFromStorage()
 })
+
+const unselectMarker = function () {
+  if (selectedFortress.value && selectedFortress.value._icon) {
+    L.DomUtil.removeClass(selectedFortress.value._icon, 'selected-marker')
+    selectedFortressFlag.value = false
+  }
+}
 
 const createMap = function () {
   const coordsStr = localStorage.getItem('coords')
@@ -216,9 +223,14 @@ const createMarker = function (baseIconIndex, colorIndex = null, iconName = null
         selectedIconFortress.value = c
       }
     }
-
-    selectedFortressFlag.value = true
+    if (selectedFortress.value !== null && selectedFortress.value._leaflet_id !== marker._leaflet_id) {
+      L.DomUtil.removeClass(selectedFortress.value._icon, 'selected-marker')
+    }
+    if (!L.DomUtil.hasClass(marker._icon, 'selected-marker')) {
+      L.DomUtil.addClass(marker._icon, 'selected-marker')
+    }
     selectedFortress.value = marker
+    selectedFortressFlag.value = true
   })
   marker.on('dragend', function (e) {
     const m = e.target
@@ -446,8 +458,7 @@ const validateImportArray = function (array) {
 <template>
   <section class="flex flex-row gap-2">
     <ContextMenu @contextmenu.prevent ref="menu" v-bind:model="items"
-      class="bg-shark-900/90 backdrop-blur rounded text-white/80 shadow w-80 context-menu"
-      @hide="selectedFortressFlag = false">
+      class="bg-shark-900/90 backdrop-blur rounded text-white/80 shadow w-80 context-menu" @hide="unselectMarker()">
       <template #item="{ item, props }">
         <a v-if="!item.isInterface"
           class="flex px-2 py-1 text-white/80 hover:bg-white/20 transition-all cursor-pointer gap-2 text-sm"
