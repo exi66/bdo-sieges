@@ -88,14 +88,13 @@ const nameFortress = ref(null)
 const colorFortress = ref(1)
 const coordsFortress = ref(null)
 
-const selectedFortress = ref(null)
-const selectedFortressFlag = ref(false)
+let selectedFortress = null
 const selectedNameFortress = ref(null)
 const selectedColorFortress = ref(null)
 const selectedIconFortress = ref(null)
 const selectedFortressDraggable = computed(() => {
-  if (!selectedFortress.value || !selectedFortressFlag.value) return false
-  return selectedFortress.value.dragging.enabled()
+  if (!selectedFortress) return false
+  return selectedFortress.dragging.enabled()
 })
 
 const parseError = ref(false)
@@ -108,13 +107,6 @@ const icons = [
   'icon-fourth', 'icon-fifth'
 ]
 
-// watch(selectedFortressFlag, () => {
-//   if (selectedFortressFlag.value && selectedFortress.value && selectedFortress.value._icon)
-//     L.DomUtil.addClass(selectedFortress.value._icon, 'selected-marker')
-//   if (!selectedFortressFlag.value && selectedFortress.value && selectedFortress.value._icon)
-//     L.DomUtil.removeClass(selectedFortress.value._icon, 'selected-marker')
-// })
-
 onMounted(() => {
   createMap()
   createCastleOwners()
@@ -122,9 +114,9 @@ onMounted(() => {
 })
 
 const unselectMarker = function () {
-  if (selectedFortress.value && selectedFortress.value._icon) {
-    L.DomUtil.removeClass(selectedFortress.value._icon, 'selected-marker')
-    selectedFortressFlag.value = false
+  if (selectedFortress && selectedFortress._icon) {
+    L.DomUtil.removeClass(selectedFortress._icon, 'selected-marker')
+    selectedFortress = null
   }
 }
 
@@ -223,14 +215,13 @@ const createMarker = function (baseIconIndex, colorIndex = null, iconName = null
         selectedIconFortress.value = c
       }
     }
-    if (selectedFortress.value !== null && selectedFortress.value._leaflet_id !== marker._leaflet_id) {
-      L.DomUtil.removeClass(selectedFortress.value._icon, 'selected-marker')
+    if (selectedFortress != null && selectedFortress._leaflet_id !== marker._leaflet_id) {
+      L.DomUtil.removeClass(selectedFortress._icon, 'selected-marker')
     }
     if (!L.DomUtil.hasClass(marker._icon, 'selected-marker')) {
       L.DomUtil.addClass(marker._icon, 'selected-marker')
     }
-    selectedFortress.value = marker
-    selectedFortressFlag.value = true
+    selectedFortress = marker
   })
   marker.on('dragend', function (e) {
     const m = e.target
@@ -297,67 +288,66 @@ const getMarkersBase64 = computed(() => {
 })
 
 const lockSelected = function () {
-  if (!selectedFortressFlag.value) return
-  if (selectedFortressDraggable.value) selectedFortress.value.dragging.disable()
-  else selectedFortress.value.dragging.enable()
+  if (!selectedFortress) return
+  if (selectedFortressDraggable.value) selectedFortress.dragging.disable()
+  else selectedFortress.dragging.enable()
 
-  let old = dataMarkers.value.get(selectedFortress.value._leaflet_id)
+  let old = dataMarkers.value.get(selectedFortress._leaflet_id)
   old.d = selectedFortressDraggable.value
-  dataMarkers.value.set(selectedFortress.value._leaflet_id, old)
+  dataMarkers.value.set(selectedFortress._leaflet_id, old)
 }
 
 const changeColorSelected = function (n) {
-  if (!selectedFortressFlag.value) return
+  if (!selectedFortress) return
   for (let c = 1; c <= 40; c++) {
-    if (L.DomUtil.hasClass(selectedFortress.value._icon, `color-${c}`))
-      L.DomUtil.removeClass(selectedFortress.value._icon, `color-${c}`)
+    if (L.DomUtil.hasClass(selectedFortress._icon, `color-${c}`))
+      L.DomUtil.removeClass(selectedFortress._icon, `color-${c}`)
   }
   // this sometime not working, i don't know why
-  // L.DomUtil.removeClass(selectedFortress.value._icon, `color-${selectedColorFortress.value}`)
-  L.DomUtil.addClass(selectedFortress.value._icon, `color-${n}`)
+  // L.DomUtil.removeClass(selectedFortress._icon, `color-${selectedColorFortress.value}`)
+  L.DomUtil.addClass(selectedFortress._icon, `color-${n}`)
   selectedColorFortress.value = n
 
-  let old = dataMarkers.value.get(selectedFortress.value._leaflet_id)
+  let old = dataMarkers.value.get(selectedFortress._leaflet_id)
   old.c = n
-  dataMarkers.value.set(selectedFortress.value._leaflet_id, old)
+  dataMarkers.value.set(selectedFortress._leaflet_id, old)
 }
 
 const changeIconSelected = function (icon) {
-  if (!selectedFortressFlag.value) return
+  if (!selectedFortress) return
   for (let i of icons) {
-    if (L.DomUtil.hasClass(selectedFortress.value._icon, `${i}`))
-      L.DomUtil.removeClass(selectedFortress.value._icon, `${i}`)
+    if (L.DomUtil.hasClass(selectedFortress._icon, `${i}`))
+      L.DomUtil.removeClass(selectedFortress._icon, `${i}`)
   }
   // this sometime not working, i don't know why
-  // L.DomUtil.removeClass(selectedFortress.value._icon, `${selectedIconFortress.value}`)
-  L.DomUtil.addClass(selectedFortress.value._icon, `${icon}`)
+  // L.DomUtil.removeClass(selectedFortress._icon, `${selectedIconFortress.value}`)
+  L.DomUtil.addClass(selectedFortress._icon, `${icon}`)
   selectedIconFortress.value = icon
 
-  let old = dataMarkers.value.get(selectedFortress.value._leaflet_id)
+  let old = dataMarkers.value.get(selectedFortress._leaflet_id)
   old.i = icon
-  dataMarkers.value.set(selectedFortress.value._leaflet_id, old)
+  dataMarkers.value.set(selectedFortress._leaflet_id, old)
 }
 
 const changeTooltipSelected = function () {
-  if (!selectedFortressFlag.value) return
+  if (!selectedFortress) return
   if (!selectedNameFortress.value) {
-    selectedFortress.value.unbindPopup()
-  } else if (selectedFortress.value.getPopup() == undefined) {
-    selectedFortress.value.bindPopup('' + selectedNameFortress.value)
+    selectedFortress.unbindPopup()
+  } else if (selectedFortress.getPopup() == undefined) {
+    selectedFortress.bindPopup('' + selectedNameFortress.value)
   } else {
-    selectedFortress.value.setPopupContent('' + selectedNameFortress.value)
+    selectedFortress.setPopupContent('' + selectedNameFortress.value)
   }
 
-  let old = dataMarkers.value.get(selectedFortress.value._leaflet_id)
-  old.p = selectedFortress.value.getPopup() ? selectedFortress.value.getPopup().getContent() : null
-  dataMarkers.value.set(selectedFortress.value._leaflet_id, old)
+  let old = dataMarkers.value.get(selectedFortress._leaflet_id)
+  old.p = selectedFortress.getPopup() ? selectedFortress.getPopup().getContent() : null
+  dataMarkers.value.set(selectedFortress._leaflet_id, old)
 }
 
 const deleteSelected = function () {
-  dataMarkers.value.delete(selectedFortress.value._leaflet_id)
-  map.value.removeLayer(selectedFortress.value)
-  selectedFortressFlag.value = false
-  selectedFortress.value = null
+  dataMarkers.value.delete(selectedFortress._leaflet_id)
+  map.value.removeLayer(selectedFortress)
+  selectedFortress = null
 }
 
 const clearMap = function () {
@@ -447,7 +437,7 @@ const validateImportArray = function (array) {
       //valid values of fields
       (item.t === 0 || item.t === 1) && //baseicon
       (item.c > 0 && item.c <= 40) && //color
-      Object.hasOwn(item.l, 'lat') && //cords
+      Object.hasOwn(item.l, 'lat') && //coords
       Object.hasOwn(item.l, 'lng') &&
       (typeof item.l.lat === 'number') &&
       (typeof item.l.lng === 'number')
@@ -469,7 +459,7 @@ const validateImportArray = function (array) {
             {{ item.shortcut }}
           </span>
         </a>
-        <div v-else-if="!selectedFortressFlag" @click.stop class="flex flex-wrap p-2 gap-1">
+        <div v-else-if="!selectedFortress" @click.stop class="flex flex-wrap p-2 gap-1">
           <div class="w-full grid grid-cols-10">
             <button @click.stop="colorFortress = n" type="button" class="p-0.5 hover:opacity-70 transition-all"
               v-for="n in 40" :key="`colorsButtonC${n}`" :class="`color-${n}`">
