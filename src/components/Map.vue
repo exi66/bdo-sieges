@@ -151,8 +151,10 @@ const createMap = function () {
 
   L.tileLayer('https://bdocodex.com/zonemap/main/{z}/{x}/{y}.webp', {
     noWrap: true,
+    bounds: [[90, -180], [-90, 180]],
     maxZoom: 7,
-    minZoom: 2,
+    minZoom: 1,
+    errorTileUrl: 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=',
     attribution: 'map layouts by <a href="https://bdocodex.com/">bdocodex</a>'
   }).addTo(map.value)
   //https://github.com/Leaflet/Leaflet/pull/8109
