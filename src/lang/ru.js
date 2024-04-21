@@ -24,7 +24,7 @@ export default {
     flag: 'Флаг',
     shareButton: 'Поделиться',
     shareImport: 'Импортировать',
-    shareImportPlacegolder: 'Вставте строку',
+    shareImportPlacegolder: 'Вставьте строку',
     shareExport: 'Экспортировать',
     shareExportPlacegolder: 'Скопируйте строку',
     shareCopy: 'Скопировать',
