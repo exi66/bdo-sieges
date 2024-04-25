@@ -22,6 +22,7 @@ export default {
     helpCloseButton: 'Я понял',
     fortress: 'Форт',
     flag: 'Флаг',
+    pin: 'Маркер',
     shareButton: 'Поделиться',
     shareImport: 'Импортировать',
     shareImportPlacegolder: 'Вставьте строку',

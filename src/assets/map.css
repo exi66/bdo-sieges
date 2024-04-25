@@ -29,6 +29,10 @@
   left: calc(50%);
 }
 
+.marker-pin {
+  top: calc(50% - 6px);
+}
+
 /*
  * Icons for buildings. Object are taken from https://www.svgrepo.com/, numbers from https://www.iconfinder.com/ (fonts awesome)
  */

@@ -21,6 +21,7 @@ export default {
     helpCloseButton: 'I understood',
     fortress: 'Fortress',
     flag: 'Flag',
+    pin: 'Marker',
     shareButton: 'Share',
     shareImport: 'Import',
     shareImportPlacegolder: 'Paste string',

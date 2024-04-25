@@ -73,4 +73,30 @@ const circle = function (classList) {
   })
 }
 
-export { fortress as fortressIcon, crown as crownIcon, flag as flagIcon, circle as circleIcon }
+const pin = function (classList) {
+  return L.divIcon({
+    html: `<div class="marker">
+      <i class="marker-icon marker-pin icon"></i>
+      <div class="marker-bg">
+        <svg viewBox="0 0 384 512" xmlns="http://www.w3.org/2000/svg">
+          <style type="text/css">
+            .st0{fill:var(--color, #FF0000);stroke:var(--stroke-color, #00000080);stroke-linecap:round;stroke-linejoin:round;stroke-width:0.5;}
+          </style>
+          <path class="st0" d="M0 192C0 85.97 85.97 0 192 0s192 85.97 192 192c0 77.41-26.97 99.03-172.3 309.7c-9.531 13.77-29.91 13.77-39.44 0C26.97 291 0 269.4 0 192z"/>
+        </svg>
+      </div>
+    </div>`,
+    className: classList.join(' '),
+    iconSize: [36, 48],
+    iconAnchor: [18, 48],
+    popupAnchor: [0, -48]
+  })
+}
+
+export {
+  fortress as fortressIcon,
+  crown as crownIcon,
+  flag as flagIcon,
+  circle as circleIcon,
+  pin as pinIcon
+}
