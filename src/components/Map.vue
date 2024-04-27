@@ -92,10 +92,7 @@ let selectedFortress = null
 const selectedNameFortress = ref(null)
 const selectedColorFortress = ref(null)
 const selectedIconFortress = ref(null)
-const selectedFortressDraggable = computed(() => {
-  if (!selectedFortress) return false
-  return selectedFortress.dragging.enabled()
-})
+const selectedFortressDraggable = ref(true)
 
 const parseError = ref(false)
 
@@ -262,6 +259,7 @@ const createMarker = function (
   marker.addTo(map.value)
   marker.on('contextmenu', function () {
     selectedFortress = marker
+    selectedFortressDraggable.value = selectedFortress.dragging.enabled()
     selectedNameFortress.value = marker.getPopup()?.getContent()
     const classList = marker.getIcon().options.className.split(' ')
     for (let c of classList) {
@@ -352,6 +350,7 @@ const lockSelected = function () {
   if (selectedFortressDraggable.value) selectedFortress.dragging.disable()
   else selectedFortress.dragging.enable()
 
+  selectedFortressDraggable.value = !selectedFortressDraggable.value
   let old = dataMarkers.value.get(selectedFortress._leaflet_id)
   old.d = selectedFortressDraggable.value
   dataMarkers.value.set(selectedFortress._leaflet_id, old)
