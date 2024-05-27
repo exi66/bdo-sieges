@@ -191,15 +191,15 @@ const createMap = function () {
 const createCastleOwners = function () {
   const svgCrown = crownIcon(['color-crown'])
   const valenciaMarker = L.marker([14.6, 137], { icon: svgCrown }).addTo(map.value)
-  if (getValenciaOwner && getValenciaOwner.value.C_guildName) {
+  if (getValenciaOwner.value && getValenciaOwner.value.C_guildName) {
     valenciaMarker.bindPopup(getValenciaOwner.value.C_guildName)
   }
   const calpheonMarker = L.marker([-24.6, -30.7], { icon: svgCrown }).addTo(map.value)
-  if (getCalpheonOwner && getCalpheonOwner.value.C_guildName) {
+  if (getCalpheonOwner.value && getCalpheonOwner.value.C_guildName) {
     calpheonMarker.bindPopup(getCalpheonOwner.value.C_guildName)
   }
   const mediahMarker = L.marker([-12.9, 42.7], { icon: svgCrown }).addTo(map.value)
-  if (getMediahOwner && getMediahOwner.value.C_guildName) {
+  if (getMediahOwner.value && getMediahOwner.value.C_guildName) {
     mediahMarker.bindPopup(getMediahOwner.value.C_guildName)
   }
   castlesOwners.value = [valenciaMarker, calpheonMarker, mediahMarker]
