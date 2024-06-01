@@ -6,7 +6,7 @@ import tailwind from 'tailwindcss'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/bdo-sieges/',
+  base: '/',
   plugins: [vue(), tailwind()],
   resolve: {
     alias: {
