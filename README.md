@@ -8,15 +8,22 @@
 
 ## Сборка
 
-```
+```bash
 npm i && npm run build
+```
+
+## Docker
+
+```bash
+docker build -t sieges .
+docker run -p 80:80 sieges
 ```
 
 ## Результаты осад
 
 В проекте присутствует `/public/result.json` - это ответ от игрового API
 
-```shell
+```bash
 curl --location 'https://game.ru.playblackdesert.com/GuildRank/Index/GetGuildRankList' \
 --header 'User-Agent: BlackDesert' \
 --form 'rankingType="1"' \
@@ -26,7 +33,7 @@ curl --location 'https://game.ru.playblackdesert.com/GuildRank/Index/GetGuildRan
 
 Вы можете настроить cron для получения данных после завершения осад
 
-```shell
+```bash
 5 22 * * 0-5 curl --location 'https://game.ru.playblackdesert.com/GuildRank/Index/GetGuildRankList' \
 --header 'User-Agent: BlackDesert' \
 --form 'rankingType="1"' \
