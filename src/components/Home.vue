@@ -15,7 +15,7 @@ const { getNodesOwners, getCalpheonOwner, getBalenosOwner, getMediahOwner, getVa
       </legend>
       <div class="flex flex-row flex-wrap gap-2">
         <div class="flex-1 bg-[#601413] rounded p-2 flex gap-2">
-          <img src="./images/calpheonBanner.png" class="w-12 my-auto" />
+          <img src="/images/calpheonBanner.png" class="w-12 my-auto" />
           <div class="flex flex-col my-auto">
             <span class="text-xl">{{ $t('map.calpheon') }}</span>
             <span class="text-black/70 dark:text-white/70">{{
@@ -24,21 +24,21 @@ const { getNodesOwners, getCalpheonOwner, getBalenosOwner, getMediahOwner, getVa
           </div>
         </div>
         <div class="flex-1 bg-[#2a4149] rounded p-2 flex gap-2">
-          <img src="./images/balenosBanner.png" class="w-12 my-auto" />
+          <img src="/images/balenosBanner.png" class="w-12 my-auto" />
           <div class="flex flex-col my-auto">
             <span class="text-xl">{{ $t('map.balenos') }}</span>
             <span class="text-black/70 dark:text-white/70">{{ getBalenosOwner?.C_guildName }}</span>
           </div>
         </div>
         <div class="flex-1 bg-[#283a30] rounded p-2 flex gap-2">
-          <img src="./images/mediahBanner.png" class="w-12 my-auto" />
+          <img src="/images/mediahBanner.png" class="w-12 my-auto" />
           <div class="flex flex-col my-auto">
             <span class="text-xl">{{ $t('map.mediah') }}</span>
             <span class="text-black/70 dark:text-white/70">{{ getMediahOwner?.C_guildName }}</span>
           </div>
         </div>
         <div class="flex-1 bg-[#302533] rounded p-2 flex gap-2">
-          <img src="./images/valenciaBanner.png" class="w-12 my-auto" />
+          <img src="/images/valenciaBanner.png" class="w-12 my-auto" />
           <div class="flex flex-col my-auto">
             <span class="text-xl">{{ $t('map.valencia') }}</span>
             <span class="text-black/70 dark:text-white/70">{{
