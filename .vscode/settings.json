@@ -1,0 +1,12 @@
+{
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+  ],
+  "css.customData": [".vscode/tailwind.json"],
+  "json.schemas": [
+    {
+      "$schema": "https://json.schemastore.org/jsconfig"
+    }
+  ]
+}
