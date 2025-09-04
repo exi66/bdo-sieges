@@ -5,7 +5,7 @@ import axios from 'axios'
 export const useAppStore = defineStore('app', () => {
   const data = ref({})
   async function getResultJson() {
-    let res = await axios.get('./result.json?' + new Date().getTime())
+    let res = await axios.get('https://exi.moe/bdo-sieges/result.json?' + new Date().getTime())
     data.value = res.data
   }
   const guildRankList = computed(() => {
