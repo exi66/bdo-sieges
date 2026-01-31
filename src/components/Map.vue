@@ -9,6 +9,8 @@ import ContextMenu from 'primevue/contextmenu'
 import OverlayPanel from 'primevue/overlaypanel'
 import { Button } from '@/ui/button'
 import { Input } from '@/ui/input'
+import settings from '@/map/settings'
+import { mapConverter } from '@/map/utils'
 
 //fix https://salesforce.stackexchange.com/questions/180977/leaflet-error-when-zoom-after-close-popup-in-lightning-component
 L.Popup.prototype._animateZoom = function (e) {
@@ -34,6 +36,14 @@ const items = [
     //shortcut: 'Alt + C',
     command: () => {
       toggleDrawCastleOwners()
+    }
+  },
+  {
+    label: 'map.drawTerritories',
+    icon: 'bi bi-eye-fill',
+    //shortcut: 'Alt + C',
+    command: () => {
+      toggleDrawTerritories()
     }
   },
   {
@@ -111,6 +121,7 @@ const icons = [
 
 onMounted(() => {
   createMap()
+  createTerritoriesPolygons()
   createCastleOwners()
   initMarkersFromStorage()
   window.addEventListener('keypress', onKeyPress)
@@ -188,6 +199,34 @@ const createMap = function () {
   map.value.attributionControl.setPrefix('')
 }
 
+const objectPolygons = ref([])
+
+const createTerritoriesPolygons = function () {
+  let polygons = new Map()
+  Object.values(settings.layers?.regions?.features || {}).forEach((t) => {
+    t.properties?.originnodeid && polygons.set(t.properties.originnodeid, t)
+  })
+  polygons.forEach((e) => {
+    let t = e.geometry.coordinates[0].map((t) => {
+      let [e, i] = convertCoords(t.x, t.y)
+      return map.value.unproject([e, i], map.value.getMaxZoom())
+    })
+    objectPolygons.value.push(L.polygon(t, { color: 'black' }).addTo(map.value))
+  })
+}
+
+const clearTerritoriesPolygons = function () {
+  objectPolygons.value.forEach((p) => {
+    map.value.removeLayer(p)
+  })
+  objectPolygons.value = []
+}
+
+const convertCoords = function (x, y) {
+  let [i, n] = mapConverter.convert([x, y], 'kr', 'sl2')
+  return [i, n]
+}
+
 const createCastleOwners = function () {
   const svgCrown = crownIcon(['color-crown'])
   const valenciaMarker = L.marker([14.6, 137], { icon: svgCrown }).addTo(map.value)
@@ -209,6 +248,14 @@ const toggleDrawCastleOwners = function () {
   for (let c of castlesOwners.value) {
     if (map.value.hasLayer(c)) map.value.removeLayer(c)
     else map.value.addLayer(c)
+  }
+}
+
+const toggleDrawTerritories = function () {
+  if (objectPolygons.value.length > 0) {
+    clearTerritoriesPolygons()
+  } else {
+    createTerritoriesPolygons()
   }
 }
 
@@ -298,12 +345,10 @@ const createMarker = function (
 }
 
 const clearMarkers = function () {
-  for (let i = 0; i < objectMarkers.value.length; i++) {
-    map.value.removeLayer(objectMarkers.value[i])
-  }
-  for (let i = 0; i < objectMarkers.value.length; i++) {
-    objectMarkers.value.pop()
-  }
+  objectMarkers.value.forEach((m) => {
+    map.value.removeLayer(m)
+  })
+  objectMarkers.value = []
   dataMarkers.value.clear()
 }
 

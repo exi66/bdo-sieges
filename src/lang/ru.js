@@ -15,6 +15,7 @@ export default {
     unlock: 'Открепить',
     funs: 'Функции',
     drawOwners: 'Показать/скрыть замки',
+    drawTerritories: 'Показать/скрыть территории',
     helpButton: 'Помощь',
     howToUseLabel: 'Как пользоваться',
     howToUseText:
