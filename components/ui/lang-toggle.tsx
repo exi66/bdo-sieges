@@ -15,6 +15,7 @@ function LangToggle() {
   return (
     <ToggleGroup
       variant="outline"
+      size={"sm"}
       type="single"
       className="w-full"
       value={i18n.language}

@@ -329,6 +329,7 @@ function UserMarkersLayer({
               <DropdownMenuSeparator />
               <ToggleGroup
                 variant="outline"
+                size={"sm"}
                 type="single"
                 className="grid w-full grid-cols-3"
                 value={String(activeMarker.type)}
