@@ -274,7 +274,7 @@ function Map() {
           ))}
         </ContextMenuContent>
       </ContextMenu>
-      <div className="absolute top-4 right-4 z-1500 space-y-4 rounded border bg-popover/80 p-4 text-sm text-popover-foreground shadow backdrop-blur">
+      <div className="absolute top-4 right-4 z-1500 space-y-4 rounded-lg border bg-popover/80 p-4 text-sm text-popover-foreground shadow backdrop-blur">
         <FieldSet className="min-w-32">
           <FieldLegend variant="label">{t("language")}</FieldLegend>
           <LangToggle />
