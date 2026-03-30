@@ -3,7 +3,6 @@ import "@/app/globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
 import { I18nProvider } from "@/components/ui/I18nProvider"
-import type { Metadata } from "next"
 
 const roboto = Roboto({
   subsets: ["latin", "cyrillic"], // Добавил cyrillic для русского языка
@@ -15,12 +14,6 @@ const fontMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
 })
-
-export const metadata: Metadata = {
-  icons: {
-    icon: "/bdo-sieges/favicon.ico",
-  },
-}
 
 export default function RootLayout({
   children,
