@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next"
 import { useEffect, useState, useCallback } from "react"
 import { MapContainer, TileLayer, useMap } from "react-leaflet"
 import { nodes } from "@/map/nodes"
+import { panorams } from "@/map/panorams"
 import { siegeNodes } from "@/map/siege-nodes"
 import {
   RegionsLayer,
@@ -12,6 +13,7 @@ import {
   SiegeRegionsLayer,
   SiegeNodesLayer,
   UserMarkersLayer,
+  PanoramsLayer,
 } from "@/components/ui/nodes-layer"
 import { GeomanControl, RulerControl } from "@/components/ui/geoman-control"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -38,6 +40,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogPortal,
+  DialogDescription,
 } from "@/components/ui/dialog"
 import { ColorSelect } from "@/components/ui/color-select"
 import { IconSelect } from "@/components/ui/icon-select"
@@ -46,6 +49,7 @@ import { Button } from "@/components/ui/button"
 import { useMapSync } from "@/hooks/useMapSync"
 import { markerTypes } from "@/map/utils"
 import { LangToggle } from "@/components/ui/lang-toggle"
+import { Pannellum } from "./pannellum"
 
 const getStorageValue = <T,>(key: string, defaultValue: T): T => {
   if (typeof window === "undefined") return defaultValue
@@ -91,6 +95,8 @@ function InitMap({
 function Map() {
   const { t } = useTranslation()
 
+  const [selectPanoramaId, setPanoramaId] = useState<number | null>(null)
+
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [clickedCoords, setClickedCoords] = useState<{
     lat: number
@@ -110,6 +116,9 @@ function Map() {
   )
   const [showSiegeNodesRegions, setShowSiegeNodesRegions] = useState(() =>
     getStorageValue("show-siege-regions", true)
+  )
+  const [showPanoramNodes, setPanoramNodes] = useState(() =>
+    getStorageValue("show-panorams", true)
   )
   const {
     data: userMarkers,
@@ -186,6 +195,12 @@ function Map() {
     )
   }, [showSiegeNodesRegions])
 
+  useEffect(() => {
+    localStorage.setItem("show-panorams", JSON.stringify(showPanoramNodes))
+  }, [showPanoramNodes])
+
+  const activePanoramData = panorams.find((p) => p.id === selectPanoramaId)
+
   return (
     <div className="relative">
       <ContextMenu>
@@ -211,6 +226,9 @@ function Map() {
                 points={rulerPoints}
                 setPoints={setRulerPoints}
               />
+              {showPanoramNodes && (
+                <PanoramsLayer nodes={panorams} onNodeClick={setPanoramaId} />
+              )}
               {showNodesRegions && (
                 <RegionsLayer nodes={nodes} selectedNodeId={selectedNodeId} />
               )}
@@ -301,6 +319,20 @@ function Map() {
           <FieldGroup className="gap-3">
             <Field orientation="horizontal">
               <Checkbox
+                id="show-panorams-checkbox"
+                name="show-panorams-checkbox"
+                checked={showPanoramNodes}
+                onCheckedChange={(checked) => setPanoramNodes(checked === true)}
+              />
+              <FieldLabel
+                htmlFor="show-panorams-checkbox"
+                className="font-normal"
+              >
+                {t("panorams")}
+              </FieldLabel>
+            </Field>
+            <Field orientation="horizontal">
+              <Checkbox
                 id="show-nodes-checkbox"
                 name="show-nodes-checkbox"
                 checked={showNodes}
@@ -384,12 +416,27 @@ function Map() {
           </div>
         </FieldSet>
       </div>
+      <Dialog
+        open={!!selectPanoramaId}
+        onOpenChange={(open) => !open && setPanoramaId(null)}
+      >
+        <DialogTitle className="sr-only">{t("panorams")}</DialogTitle>
+        <DialogDescription className="sr-only">
+          {activePanoramData?.name}
+        </DialogDescription>
+        <DialogContent className="h-screen max-w-full overflow-hidden rounded-none p-0 sm:h-[calc(100vh-6rem)] sm:max-w-[calc(100%-6rem)] sm:rounded-lg">
+          {activePanoramData && <Pannellum image={activePanoramData.image} />}
+        </DialogContent>
+      </Dialog>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogPortal container={document.body}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>{t("import_export")}</DialogTitle>
             </DialogHeader>
+            <DialogDescription className="sr-only">
+              {t("import_export")}
+            </DialogDescription>
             <div className="space-y-1">
               <div className="flex flex-row items-end justify-between">
                 <FieldLabel className="text-muted-foreground">

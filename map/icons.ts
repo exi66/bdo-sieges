@@ -1,6 +1,7 @@
 import L from "leaflet"
 import castleMarker from "@/public/icons/castle-marker.svg"
 import nodeMarker from "@/public/icons/node-marker.svg"
+import cameraMarker from "@/public/icons/camera-marker.svg"
 
 export const createCustomNodeIcon = (node: SiegeNode) => {
   const width = 28
@@ -126,5 +127,22 @@ export const createCustomPinIcon = (
     </div>`,
     iconSize: [width * scale, height * scale],
     iconAnchor: [(width * scale) / 2, height * scale],
+  })
+}
+
+export const createCustomCameraIcon = (node: PanoramNode) => {
+  const width = 28
+  const height = 32
+
+  return L.divIcon({
+    className: "custom-marker",
+    html: `<div class="relative w-full h-full">
+      <img src="${cameraMarker.src}" alt="${node.name}" class="w-full h-full" />
+      <div class="absolute -bottom-2.5 left-1/2 transform -translate-x-1/2 translate-y-1/2 text-white text-shadow-md/80 text-xs whitespace-nowrap">
+        ${node.name}
+      </div>
+    </div>`,
+    iconSize: [width, height],
+    iconAnchor: [width / 2, height],
   })
 }

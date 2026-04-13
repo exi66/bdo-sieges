@@ -53,6 +53,9 @@ importers:
       react-leaflet:
         specifier: 5.0.0-rc.2
         version: 5.0.0-rc.2(leaflet@1.9.4)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+      react-pannellum:
+        specifier: 1.1.2-alpha.1
+        version: 1.1.2-alpha.1(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       shadcn:
         specifier: ^4.2.0
         version: 4.2.0(@types/node@25.6.0)(typescript@5.9.3)
@@ -3572,6 +3575,13 @@ packages:
       leaflet: ^1.9.0
       react: ^19.0.0
       react-dom: ^19.0.0
+
+  react-pannellum@1.1.2-alpha.1:
+    resolution: {integrity: sha512-7mXXCFxzlO6hGbkZ4LsKM9ZM6jPTRNo46tX6qpQ7gIQzdqOC9fMJwc+ysuLXHGQQQfXSWuQt7bIhyv+8/7+GXw==}
+    engines: {node: '>=22.0.0 <23.0.0', npm: '>=10.0.0'}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
 
   react-remove-scroll-bar@2.3.8:
     resolution: {integrity: sha512-9r+yi9+mgU33AKcj6IbT9oRCO78WriSj6t/cF8DWBZJ9aOGPOTEDvdUDz1FwKim7QXWwmHqtdHnRJfhAxEG46Q==}
@@ -7804,6 +7814,11 @@ snapshots:
     dependencies:
       '@react-leaflet/core': 3.0.0(leaflet@1.9.4)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       leaflet: 1.9.4
+      react: 19.2.5
+      react-dom: 19.2.5(react@19.2.5)
+
+  react-pannellum@1.1.2-alpha.1(react-dom@19.2.5(react@19.2.5))(react@19.2.5):
+    dependencies:
       react: 19.2.5
       react-dom: 19.2.5(react@19.2.5)
 

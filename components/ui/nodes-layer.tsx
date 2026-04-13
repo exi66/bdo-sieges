@@ -10,6 +10,7 @@ import {
   createCustomFlagIcon,
   createCustomFortressIcon,
   createCustomPinIcon,
+  createCustomCameraIcon,
 } from "@/map/icons"
 import {
   DropdownMenu,
@@ -461,7 +462,54 @@ function UserMarkersLayer({
   )
 }
 
+interface PanoramsProps {
+  nodes: PanoramsData
+  onNodeClick: (nodeId: number) => void
+}
+
+function PanoramsLayer({ nodes, onNodeClick }: PanoramsProps) {
+  const map = useMap()
+  const maxZoom = map.getMaxZoom()
+
+  const nodesList = useMemo(() => {
+    return nodes.map((node) => {
+      const [x, y] = mapConverter.convert(
+        [Number(node.location.x), Number(node.location.y)],
+        "kr",
+        "sl2"
+      )
+
+      return {
+        id: node.id,
+        location: node.location,
+        position: map.unproject([x, y], maxZoom),
+        icon: createCustomCameraIcon(node),
+        name: node.name,
+      }
+    })
+  }, [nodes, map, maxZoom])
+
+  return (
+    <>
+      {nodesList.map((node) => (
+        <Marker
+          key={node.id}
+          position={node.position}
+          icon={node.icon}
+          pmIgnore={true}
+          eventHandlers={{
+            click: () => {
+              onNodeClick(node.id)
+            },
+          }}
+        />
+      ))}
+    </>
+  )
+}
+
 export {
+  PanoramsLayer,
   RegionsLayer,
   NodesLayer,
   SiegeRegionsLayer,

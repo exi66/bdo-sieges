@@ -22,6 +22,19 @@ interface SiegeNode {
   polygon: Point[]
 }
 
+interface PanoramNode {
+  id: number
+  name: string
+  location: {
+    fmt: string
+    x: number
+    y: number
+  }
+  image: string
+}
+
+type PanoramsData = PanoramNode[]
+
 type NodesData = SiegeNode[]
 
 interface UserMarker {
