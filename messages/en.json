@@ -27,5 +27,6 @@
   "delete": "Delete",
   "clear": "Clear",
   "map_provider": "map provided by ",
-  "loading": "Loading..."
+  "loading": "Loading...",
+  "settings": "Settings"
 }

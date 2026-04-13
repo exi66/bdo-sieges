@@ -15,6 +15,14 @@ import {
   UserMarkersLayer,
   PanoramsLayer,
 } from "@/components/ui/nodes-layer"
+import { Menu } from "lucide-react"
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet"
 import { GeomanControl, RulerControl } from "@/components/ui/geoman-control"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -201,6 +209,109 @@ function Map() {
 
   const activePanoramData = panorams.find((p) => p.id === selectPanoramaId)
 
+  const SettingsContent = (
+    <div className="space-y-4">
+      <FieldSet className="min-w-32">
+        <FieldLegend variant="label">{t("language")}</FieldLegend>
+        <LangToggle />
+      </FieldSet>
+      <FieldSet className="min-w-32">
+        <FieldLegend variant="label">{t("layers")}</FieldLegend>
+        <FieldGroup className="gap-3">
+          <Field orientation="horizontal">
+            <Checkbox
+              id="show-panorams-checkbox"
+              checked={showPanoramNodes}
+              onCheckedChange={(checked) => setPanoramNodes(checked === true)}
+            />
+            <FieldLabel
+              htmlFor="show-panorams-checkbox"
+              className="font-normal"
+            >
+              {t("panorams")}
+            </FieldLabel>
+          </Field>
+          <Field orientation="horizontal">
+            <Checkbox
+              id="show-nodes-checkbox"
+              checked={showNodes}
+              onCheckedChange={(checked) => setShowNodes(checked === true)}
+            />
+            <FieldLabel htmlFor="show-nodes-checkbox" className="font-normal">
+              {t("nodes")}
+            </FieldLabel>
+          </Field>
+          <Field orientation="horizontal">
+            <Checkbox
+              id="show-nodes-regions-checkbox"
+              checked={showNodesRegions}
+              onCheckedChange={(checked) =>
+                setShowNodesRegions(checked === true)
+              }
+            />
+            <FieldLabel
+              htmlFor="show-nodes-regions-checkbox"
+              className="font-normal"
+            >
+              {t("nodes_regions")}
+            </FieldLabel>
+          </Field>
+          <Field orientation="horizontal">
+            <Checkbox
+              id="show-siege-nodes-checkbox"
+              checked={showSiegeNodes}
+              onCheckedChange={(checked) => setShowSiegeNodes(checked === true)}
+            />
+            <FieldLabel
+              htmlFor="show-siege-nodes-checkbox"
+              className="font-normal"
+            >
+              {t("territories")}
+            </FieldLabel>
+          </Field>
+          <Field orientation="horizontal">
+            <Checkbox
+              id="show-siege-regions-checkbox"
+              checked={showSiegeNodesRegions}
+              onCheckedChange={(checked) =>
+                setShowSiegeNodesRegions(checked === true)
+              }
+            />
+            <FieldLabel
+              htmlFor="show-siege-regions-checkbox"
+              className="font-normal"
+            >
+              {t("territories_regions")}
+            </FieldLabel>
+          </Field>
+        </FieldGroup>
+      </FieldSet>
+      <FieldSet className="min-w-32">
+        <FieldLegend variant="label">{t("controls")}</FieldLegend>
+        <div className="flex flex-col gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full"
+            onClick={() =>
+              confirm(t("clear_all_confirm")) && setUserMarkers([])
+            }
+          >
+            {t("clear_all")}
+          </Button>
+          <Button
+            onClick={() => setIsDialogOpen(true)}
+            variant="outline"
+            size="sm"
+            className="w-full"
+          >
+            {t("import_export")}
+          </Button>
+        </div>
+      </FieldSet>
+    </div>
+  )
+
   return (
     <div className="relative">
       <ContextMenu>
@@ -309,112 +420,24 @@ function Map() {
           ))}
         </ContextMenuContent>
       </ContextMenu>
-      <div className="absolute top-4 right-4 z-1500 space-y-4 rounded-lg border bg-popover/80 p-4 text-sm text-popover-foreground shadow backdrop-blur">
-        <FieldSet className="min-w-32">
-          <FieldLegend variant="label">{t("language")}</FieldLegend>
-          <LangToggle />
-        </FieldSet>
-        <FieldSet className="min-w-32">
-          <FieldLegend variant="label">{t("layers")}</FieldLegend>
-          <FieldGroup className="gap-3">
-            <Field orientation="horizontal">
-              <Checkbox
-                id="show-panorams-checkbox"
-                name="show-panorams-checkbox"
-                checked={showPanoramNodes}
-                onCheckedChange={(checked) => setPanoramNodes(checked === true)}
-              />
-              <FieldLabel
-                htmlFor="show-panorams-checkbox"
-                className="font-normal"
-              >
-                {t("panorams")}
-              </FieldLabel>
-            </Field>
-            <Field orientation="horizontal">
-              <Checkbox
-                id="show-nodes-checkbox"
-                name="show-nodes-checkbox"
-                checked={showNodes}
-                onCheckedChange={(checked) => setShowNodes(checked === true)}
-              />
-              <FieldLabel htmlFor="show-nodes-checkbox" className="font-normal">
-                {t("nodes")}
-              </FieldLabel>
-            </Field>
-            <Field orientation="horizontal">
-              <Checkbox
-                id="show-nodes-regions-checkbox"
-                name="show-nodes-regions-checkbox"
-                checked={showNodesRegions}
-                onCheckedChange={(checked) =>
-                  setShowNodesRegions(checked === true)
-                }
-              />
-              <FieldLabel
-                htmlFor="show-nodes-regions-checkbox"
-                className="font-normal"
-              >
-                {t("nodes_regions")}
-              </FieldLabel>
-            </Field>
-            <Field orientation="horizontal">
-              <Checkbox
-                id="show-siege-nodes-checkbox"
-                name="show-siege-nodes-checkbox"
-                checked={showSiegeNodes}
-                onCheckedChange={(checked) =>
-                  setShowSiegeNodes(checked === true)
-                }
-              />
-              <FieldLabel
-                htmlFor="show-siege-nodes-checkbox"
-                className="font-normal"
-              >
-                {t("territories")}
-              </FieldLabel>
-            </Field>
-            <Field orientation="horizontal">
-              <Checkbox
-                id="show-siege-regions-checkbox"
-                name="show-siege-regions-checkbox"
-                checked={showSiegeNodesRegions}
-                onCheckedChange={(checked) =>
-                  setShowSiegeNodesRegions(checked === true)
-                }
-              />
-              <FieldLabel
-                htmlFor="show-siege-regions-checkbox"
-                className="font-normal"
-              >
-                {t("territories_regions")}
-              </FieldLabel>
-            </Field>
-          </FieldGroup>
-        </FieldSet>
-        <FieldSet className="min-w-32">
-          <FieldLegend variant="label">{t("controls")}</FieldLegend>
-          <div className="flex flex-col gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full"
-              onClick={() =>
-                confirm(t("clear_all_confirm")) && setUserMarkers([])
-              }
-            >
-              {t("clear_all")}
+      <div className="absolute top-2.5 right-2.5 z-1500 lg:hidden">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button size="icon" className="bg-popover/80 shadow backdrop-blur">
+              <Menu className="h-5 w-5" />
             </Button>
-            <Button
-              onClick={() => setIsDialogOpen(true)}
-              variant="outline"
-              size="sm"
-              className="w-full"
-            >
-              {t("import_export")}
-            </Button>
-          </div>
-        </FieldSet>
+          </SheetTrigger>
+          <SheetContent className="z-2000 w-72 overflow-y-auto bg-popover/95 p-4 backdrop-blur">
+            <SheetTitle className="mb-4">{t("settings")}</SheetTitle>
+            <SheetDescription className="sr-only">
+              Map layer and language controls
+            </SheetDescription>
+            {SettingsContent}
+          </SheetContent>
+        </Sheet>
+      </div>
+      <div className="absolute top-2.5 right-2.5 z-1500 hidden w-56 rounded-lg border bg-popover/80 p-4 text-sm text-popover-foreground shadow backdrop-blur lg:block">
+        {SettingsContent}
       </div>
       <Dialog
         open={!!selectPanoramaId}
