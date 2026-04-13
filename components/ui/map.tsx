@@ -1,7 +1,7 @@
 "use client"
 
-import { useTranslation } from "react-i18next"
 import "leaflet/dist/leaflet.css"
+import { useTranslation } from "react-i18next"
 import { useEffect, useState, useCallback } from "react"
 import { MapContainer, TileLayer, useMap } from "react-leaflet"
 import { nodes } from "@/map/nodes"
@@ -102,8 +102,14 @@ function Map() {
   const [showNodes, setShowNodes] = useState(() =>
     getStorageValue("show-nodes", true)
   )
+  const [showNodesRegions, setShowNodesRegions] = useState(() =>
+    getStorageValue("show-nodes-regions", true)
+  )
   const [showSiegeNodes, setShowSiegeNodes] = useState(() =>
     getStorageValue("show-siege", true)
+  )
+  const [showSiegeNodesRegions, setShowSiegeNodesRegions] = useState(() =>
+    getStorageValue("show-siege-regions", true)
   )
   const {
     data: userMarkers,
@@ -166,8 +172,19 @@ function Map() {
   }, [showNodes])
 
   useEffect(() => {
+    localStorage.setItem("show-nodes-regions", JSON.stringify(showNodesRegions))
+  }, [showNodesRegions])
+
+  useEffect(() => {
     localStorage.setItem("show-siege", JSON.stringify(showSiegeNodes))
   }, [showSiegeNodes])
+
+  useEffect(() => {
+    localStorage.setItem(
+      "show-siege-regions",
+      JSON.stringify(showSiegeNodesRegions)
+    )
+  }, [showSiegeNodesRegions])
 
   return (
     <div className="relative">
@@ -194,13 +211,13 @@ function Map() {
                 points={rulerPoints}
                 setPoints={setRulerPoints}
               />
-              {showNodes && (
+              {showNodesRegions && (
                 <RegionsLayer nodes={nodes} selectedNodeId={selectedNodeId} />
               )}
               {showNodes && (
                 <NodesLayer nodes={nodes} onNodeClick={handleNodeClick} />
               )}
-              {showSiegeNodes && (
+              {showSiegeNodesRegions && (
                 <SiegeRegionsLayer
                   nodes={siegeNodes}
                   selectedNodeId={selectedNodeId}
@@ -295,6 +312,22 @@ function Map() {
             </Field>
             <Field orientation="horizontal">
               <Checkbox
+                id="show-nodes-regions-checkbox"
+                name="show-nodes-regions-checkbox"
+                checked={showNodesRegions}
+                onCheckedChange={(checked) =>
+                  setShowNodesRegions(checked === true)
+                }
+              />
+              <FieldLabel
+                htmlFor="show-nodes-regions-checkbox"
+                className="font-normal"
+              >
+                {t("nodes_regions")}
+              </FieldLabel>
+            </Field>
+            <Field orientation="horizontal">
+              <Checkbox
                 id="show-siege-nodes-checkbox"
                 name="show-siege-nodes-checkbox"
                 checked={showSiegeNodes}
@@ -307,6 +340,22 @@ function Map() {
                 className="font-normal"
               >
                 {t("territories")}
+              </FieldLabel>
+            </Field>
+            <Field orientation="horizontal">
+              <Checkbox
+                id="show-siege-regions-checkbox"
+                name="show-siege-regions-checkbox"
+                checked={showSiegeNodesRegions}
+                onCheckedChange={(checked) =>
+                  setShowSiegeNodesRegions(checked === true)
+                }
+              />
+              <FieldLabel
+                htmlFor="show-siege-regions-checkbox"
+                className="font-normal"
+              >
+                {t("territories_regions")}
               </FieldLabel>
             </Field>
           </FieldGroup>

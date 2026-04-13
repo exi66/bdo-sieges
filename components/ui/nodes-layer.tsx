@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button"
 import { Lock, LockOpen, Trash2, X } from "lucide-react"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { getCssVar } from "@/lib/utils"
+import { type LatLngExpression } from "leaflet"
 
 interface RegionsProps {
   nodes: NodesData
@@ -52,27 +53,48 @@ function RegionsLayer({ nodes, selectedNodeId }: RegionsProps) {
       return map.unproject([x, y], map.getMaxZoom())
     })
 
+    const worldBounds = [
+      [-90, -360],
+      [90, -360],
+      [90, 360],
+      [-90, 360],
+    ]
+
     return {
       id: node.id,
-      positions,
+      hole: positions,
+      positions: [worldBounds, positions] as LatLngExpression[][],
     }
   }, [nodes, selectedNodeId, map])
 
   if (!activePolygon) return null
 
   return (
-    <Polygon
-      key={activePolygon.id}
-      positions={activePolygon.positions}
-      interactive={false}
-      pathOptions={{
-        color: getCssVar("--chart-7"),
-        fillColor: getCssVar("--chart-7"),
-        weight: 2,
-        fillOpacity: 0.1,
-        pmIgnore: true,
-      }}
-    />
+    <>
+      <Polygon
+        key={`${activePolygon.id}-mask`}
+        positions={activePolygon.positions}
+        interactive={false}
+        pathOptions={{
+          stroke: false,
+          fillColor: getCssVar("--background"),
+          fillOpacity: 0.5,
+          pmIgnore: true,
+        }}
+      />
+
+      <Polygon
+        key={`${activePolygon.id}-outline`}
+        positions={activePolygon.hole}
+        interactive={false}
+        pathOptions={{
+          color: getCssVar("--chart-7"),
+          weight: 2,
+          fill: false,
+          pmIgnore: true,
+        }}
+      />
+    </>
   )
 }
 
@@ -174,28 +196,48 @@ function SiegeRegionsLayer({ nodes, selectedNodeId }: RegionsProps) {
       return map.unproject([x, y], map.getMaxZoom())
     })
 
+    const worldBounds = [
+      [-90, -360],
+      [90, -360],
+      [90, 360],
+      [-90, 360],
+    ]
+
     return {
       id: node.id,
-      positions,
+      hole: positions,
+      positions: [worldBounds, positions] as LatLngExpression[][],
     }
   }, [nodes, selectedNodeId, map])
 
   if (!activePolygon) return null
 
   return (
-    <Polygon
-      key={activePolygon.id}
-      positions={activePolygon.positions}
-      interactive={false}
-      pathOptions={{
-        color: getCssVar("--chart-7"),
-        fillColor: getCssVar("--chart-7"),
-        fillOpacity: 0.1,
-        weight: 2,
-        dashArray: [10, 10],
-        pmIgnore: true,
-      }}
-    />
+    <>
+      <Polygon
+        key={`${activePolygon.id}-mask`}
+        positions={activePolygon.positions}
+        interactive={false}
+        pathOptions={{
+          stroke: false,
+          fillColor: getCssVar("--background"),
+          fillOpacity: 0.5,
+          pmIgnore: true,
+        }}
+      />
+
+      <Polygon
+        key={`${activePolygon.id}-outline`}
+        positions={activePolygon.hole}
+        interactive={false}
+        pathOptions={{
+          color: getCssVar("--chart-7"),
+          weight: 2,
+          fill: false,
+          pmIgnore: true,
+        }}
+      />
+    </>
   )
 }
 
