@@ -234,6 +234,7 @@ function SiegeRegionsLayer({ nodes, selectedNodeId }: RegionsProps) {
           color: getCssVar("--chart-7"),
           weight: 2,
           fill: false,
+          dashArray: [10, 10],
           pmIgnore: true,
         }}
       />
