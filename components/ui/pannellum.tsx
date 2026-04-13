@@ -41,6 +41,15 @@ function Pannellum({ image }: { image: string }) {
           left: 8px;
           top: 4px;
         }
+        .pnlm-about-msg {
+          display: none !important;
+          visibility: hidden !important;
+        }
+        .pnlm-context-menu {
+          display: none !important;
+          visibility: hidden !important;
+          pointer-events: none !important;
+        }
       `}</style>
     </div>
   )
