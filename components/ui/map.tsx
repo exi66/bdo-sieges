@@ -4,7 +4,8 @@ import "leaflet/dist/leaflet.css"
 import { useTranslation } from "react-i18next"
 import { useEffect, useState, useCallback } from "react"
 import { MapContainer, TileLayer, useMap } from "react-leaflet"
-import { nodes } from "@/map/nodes"
+//import { nodes } from "@/map/nodes"
+import { nodes } from "@/local/nodesData"
 import { panorams } from "@/map/panorams"
 import { siegeNodes } from "@/map/siege-nodes"
 import {
@@ -58,6 +59,7 @@ import { useMapSync } from "@/hooks/useMapSync"
 import { markerTypes } from "@/map/utils"
 import { LangToggle } from "@/components/ui/lang-toggle"
 import { Pannellum } from "./pannellum"
+import L from "leaflet"
 
 const getStorageValue = <T,>(key: string, defaultValue: T): T => {
   if (typeof window === "undefined") return defaultValue
@@ -318,13 +320,14 @@ function Map() {
         <ContextMenuTrigger asChild>
           <div className="h-screen w-screen">
             <MapContainer
-              center={[0, 0]}
+              crs={L.CRS.Simple}
+              center={[-140, 140]}
               maxZoom={8}
               minZoom={4}
               zoom={4}
               maxBounds={[
-                [90, -180],
-                [-90, 180],
+                [-240, 0],
+                [0, 250],
               ]}
               maxBoundsViscosity={1.0}
               doubleClickZoom={false}
@@ -366,8 +369,8 @@ function Map() {
               <TileLayer
                 noWrap={true}
                 bounds={[
-                  [90, -180],
-                  [-90, 180],
+                  [30718, -28768],
+                  [-30718, 28768],
                 ]}
                 attribution={`${t("map_provider")} <a href="https://nodewar.gg/" target="_blank">nodewar.gg</a>`}
                 url="https://storage.nodewar.gg/map/tiles/{z}/{x}_{y}.webp"

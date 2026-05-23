@@ -49,16 +49,17 @@ function RegionsLayer({ nodes, selectedNodeId }: RegionsProps) {
       const [x, y] = mapConverter.convert(
         [Number(pt.x), Number(pt.y)],
         "kr",
-        "sl2"
+        "sl2",
+        node.new
       )
       return map.unproject([x, y], map.getMaxZoom())
     })
 
     const worldBounds = [
-      [-90, -360],
-      [90, -360],
-      [90, 360],
-      [-90, 360],
+      [-30718, -28768],
+      [30718, -28768],
+      [30718, 28768],
+      [-30718, 28768],
     ]
 
     return {
@@ -108,7 +109,8 @@ function NodesLayer({ nodes, onNodeClick }: NodesProps) {
       const [x, y] = mapConverter.convert(
         [Number(node.location.x), Number(node.location.y)],
         "kr",
-        "sl2"
+        "sl2",
+        node.new
       )
 
       return {
@@ -149,7 +151,8 @@ function SiegeNodesLayer({ nodes, onNodeClick }: NodesProps) {
       const [x, y] = mapConverter.convert(
         [Number(node.location.x), Number(node.location.y)],
         "kr",
-        "sl2"
+        "sl2",
+        node.new
       )
 
       return {
@@ -192,16 +195,17 @@ function SiegeRegionsLayer({ nodes, selectedNodeId }: RegionsProps) {
       const [x, y] = mapConverter.convert(
         [Number(pt.x), Number(pt.y)],
         "kr",
-        "sl2"
+        "sl2",
+        node.new
       )
       return map.unproject([x, y], map.getMaxZoom())
     })
 
     const worldBounds = [
-      [-90, -360],
-      [90, -360],
-      [90, 360],
-      [-90, 360],
+      [-30718, -28768],
+      [30718, -28768],
+      [30718, 28768],
+      [-30718, 28768],
     ]
 
     return {
