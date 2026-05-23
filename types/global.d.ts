@@ -20,6 +20,7 @@ interface SiegeNode {
     y: number
   }
   polygon: Point[]
+  new?: boolean
 }
 
 interface PanoramNode {

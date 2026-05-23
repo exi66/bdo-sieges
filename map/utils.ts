@@ -10,10 +10,12 @@ export class MapCoordinateConverter {
   constructor() {
     this.conversions["kr-sl2"] = this.createConversionForKrToSl2()
     this.conversions["sl2-kr"] = this.createConversionForSl2ToKr()
+    this.conversions["kr-sl2-new"] = this.createConversionForKrToSl2New()
+    this.conversions["sl2-kr-new"] = this.createConversionForSl2ToKrNew()
   }
 
-  convert(coords: Coords, from = "kr", to = "sl2"): Coords {
-    const config = this.conversions[`${from}-${to}`]
+  convert(coords: Coords, from = "kr", to = "sl2", isNew?: boolean): Coords {
+    const config = this.conversions[`${from}-${to}${isNew ? "-new" : ""}`]
     if (!config) throw new Error(`No conversion found for ${from}-${to}`)
 
     let [x, y] = coords
@@ -48,7 +50,12 @@ export class MapCoordinateConverter {
 
   convertNode(node: SiegeNode): Coords {
     if (node.location && node.location?.fmt === "kr") {
-      return this.convert([node.location.x, node.location.y], "kr", "sl2")
+      return this.convert(
+        [node.location.x, node.location.y],
+        "kr",
+        "sl2",
+        node.new
+      )
     }
     throw new Error("Node does not have KR format location data")
   }
@@ -72,6 +79,22 @@ export class MapCoordinateConverter {
   private createConversionForSl2ToKr(): ConversionConfig {
     return {
       pretranslate: { x: -34299, y: -36119 },
+      translate: { x: 0, y: 0 },
+      scale: { x: 50, y: -50 },
+    }
+  }
+
+  private createConversionForKrToSl2New(): ConversionConfig {
+    return {
+      pretranslate: { x: 0, y: 0 },
+      translate: { x: 34299, y: 36088 },
+      scale: { x: 0.02, y: -0.02 },
+    }
+  }
+
+  private createConversionForSl2ToKrNew(): ConversionConfig {
+    return {
+      pretranslate: { x: -34299, y: -36088 },
       translate: { x: 0, y: 0 },
       scale: { x: 50, y: -50 },
     }
