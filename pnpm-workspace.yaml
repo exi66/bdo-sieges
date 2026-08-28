@@ -16,6 +16,8 @@ minimumReleaseAgeExclude:
   - postcss@8.5.12
   - postcss@8.5.18
   - postcss@8.5.23
+  - js-yaml@4.3.1
+  - nanoid@3.3.18
 overrides:
   '@hono/node-server@<2.0.5': ^2.0.5
   postcss@<8.5.10: ^8.5.10
