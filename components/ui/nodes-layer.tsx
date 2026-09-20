@@ -325,8 +325,13 @@ function UserMarkersLayer({
           />
         </DropdownMenuTrigger>
         <DropdownMenuContent
-          side="top"
-          align="center"
+          {...(activeMarker
+            ? {
+                side: "right" as const,
+                align: "start" as const,
+                sideOffset: 16,
+              }
+            : {})}
           className="z-1500 w-auto bg-popover/80 backdrop-blur"
           onContextMenu={(e) => {
             e.preventDefault()
