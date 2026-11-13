@@ -172,6 +172,31 @@
     @apply text-primary;
   }
 
+  /* Цвета векторных слоёв задаются через CSS, чтобы следовать за темой. */
+  .map-region-mask {
+    fill: var(--background);
+  }
+
+  .map-region-outline {
+    stroke: var(--chart-7);
+  }
+
+  .map-ruler-line {
+    stroke: var(--chart-1);
+  }
+
+  /* Pannellum: скрываем лишние элементы интерфейса просмотрщика. */
+  .pnlm-load-box,
+  .pnlm-about-msg,
+  .pnlm-context-menu {
+    display: none !important;
+  }
+
+  .pnlm-controls-container {
+    left: 8px;
+    top: 4px;
+  }
+
   .animate-flash {
     animation: fade-out-in 2s forwards;
   }

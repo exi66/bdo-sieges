@@ -1,4 +1,4 @@
-import { MapWrapper } from "@/components/ui/map-wrapper"
+import { MapWrapper } from "@/components/map/map-wrapper"
 
 export default function Page() {
   return (

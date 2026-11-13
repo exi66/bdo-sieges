@@ -1,7 +1,12 @@
+const basePath = "/bdo-sieges"
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  basePath: "/bdo-sieges",
-  assetPrefix: "/bdo-sieges",
+  basePath,
+  assetPrefix: basePath,
+  env: {
+    NEXT_PUBLIC_BASE_PATH: basePath,
+  },
   output: "export",
   images: {
     unoptimized: true,
