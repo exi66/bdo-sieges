@@ -87,29 +87,31 @@ function RegionHighlightLayer({
   if (!region) return null
 
   // Цвета задаются CSS-классами, чтобы следовать за сменой темы.
+  // className и pmIgnore читаются только при создании слоя, поэтому
+  // передаются отдельными props, а не через pathOptions (там — setStyle).
   return (
     <>
       <Polygon
         key={`${region.id}-mask`}
         positions={region.mask}
         interactive={false}
+        className="map-region-mask"
+        pmIgnore
         pathOptions={{
-          className: "map-region-mask",
           stroke: false,
           fillOpacity: 0.5,
-          pmIgnore: true,
         }}
       />
       <Polygon
         key={`${region.id}-outline`}
         positions={region.outline}
         interactive={false}
+        className="map-region-outline"
+        pmIgnore
         pathOptions={{
-          className: "map-region-outline",
           weight: 2,
           fill: false,
           dashArray: dashed ? [10, 10] : undefined,
-          pmIgnore: true,
         }}
       />
     </>

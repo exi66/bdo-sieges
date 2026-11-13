@@ -13,10 +13,13 @@ interface RulerControlProps {
 }
 
 const HIDDEN_ICON = L.divIcon({ className: "hidden" })
-const LINE_OPTIONS: L.PolylineOptions = {
+// Передаются как props: react-leaflet отдаёт их в конструктор Leaflet,
+// а className из pathOptions (setStyle) не применяется.
+const LINE_PROPS = {
   className: "map-ruler-line",
   dashArray: [10, 10],
   weight: 2,
+  pmIgnore: true,
 }
 
 /** Линейка: клики по карте добавляют точки, Esc сбрасывает. */
@@ -56,11 +59,11 @@ function RulerControl({ active, points, setPoints }: RulerControlProps) {
 
   return (
     <>
-      <Polyline positions={points} pathOptions={LINE_OPTIONS} />
+      <Polyline positions={points} {...LINE_PROPS} />
       {cursor && (
         <Polyline
           positions={[points[points.length - 1], cursor]}
-          pathOptions={LINE_OPTIONS}
+          {...LINE_PROPS}
         />
       )}
       {points.map((point, i) => (
