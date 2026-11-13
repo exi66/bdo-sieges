@@ -27,6 +27,11 @@
   "delete": "Удалить",
   "clear": "Очистить",
   "map_provider": "карта предоставлена ",
-  "loading": "Загрузка...",
-  "settings": "Настройки"
+  "settings": "Настройки",
+  "settings_description": "Слои карты и язык",
+  "import_error": "Неверный код",
+  "ruler_start": "Старт",
+  "distance_meters": "{{value}} м",
+  "select_color": "Цвет {{n}}",
+  "select_icon": "Иконка: {{name}}"
 }

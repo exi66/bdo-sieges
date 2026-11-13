@@ -27,6 +27,11 @@
   "delete": "Delete",
   "clear": "Clear",
   "map_provider": "map provided by ",
-  "loading": "Loading...",
-  "settings": "Settings"
+  "settings": "Settings",
+  "settings_description": "Map layers and language",
+  "import_error": "Invalid code",
+  "ruler_start": "Start",
+  "distance_meters": "{{value}} m",
+  "select_color": "Color {{n}}",
+  "select_icon": "Icon: {{name}}"
 }
